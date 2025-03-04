@@ -2,12 +2,12 @@ require('dotenv').config(); // Load environment variables
 
 const express = require('express');
 const sequelize = require('./config/database');
-const User = require('./models/User');
+require("./config/associations"); 
 
 const app = express();
 app.use(express.json());
 
-sequelize.sync({ alter: true }) // Sync models with MySQL
+sequelize.sync({ alter: true }) 
     .then(() => console.log('Database synchronized'))
     .catch(err => console.error('Error:', err));
 
