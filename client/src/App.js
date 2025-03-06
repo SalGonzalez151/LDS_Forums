@@ -1,23 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from 'react';
+import { Button, Container, Typography } from '@mui/material';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxWidth="sm" sx={{ textAlign: 'center', marginTop: 4 }}>
+      <Typography variant="h3" gutterBottom>
+        Welcome to LDS Forums
+      </Typography>
+      <Typography variant="body1" paragraph>
+        Join the discussion and explore new topics!
+      </Typography>
+      <Button variant="contained" color="primary">
+        Get Started
+      </Button>
+    </Container>
   );
 }
 
