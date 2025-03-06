@@ -61,22 +61,6 @@ router.get("/:id", async (req, res) => {
     }
 })
 
-router.put('/:id', authenticate, async (req, res) => {
-    try {
-        const post = Post.findByPk(req.params.id);
-        if (!post) return res.status(404).json("Post not found");
-
-        if (post.userId !== req.user.userId && req.user.role !== "admin") {
-            return res.status(403).json({ error: "Not Authorized!"});
-        }
-
-        await post.update(req.body);
-        res.json({ message: "Post Updated", post});
-    } catch (error) {
-        res.status(500).json({ error: error.message});
-    }
-});
-
 router.delete("/:id", authenticate, async (req, res) => {
     try {
         const post = Post.findByPk(req.params.id);
@@ -92,5 +76,22 @@ router.delete("/:id", authenticate, async (req, res) => {
         res.status(500).json({ error: error.message})
     }
 })
+
+router.put("/:id", authenticate, async (req, res) => {
+    try {
+      const post = await Post.findByPk(req.params.id);
+      if (!post) return res.status(404).json({ error: "Post not found." });
+  
+      // Only allow admin, moderator, or the post's owner to update
+      if (req.user.role !== "admin" && req.user.role !== "moderator" && req.user.id !== post.userId) {
+        return res.status(403).json({ error: "Permission denied." });
+      }
+  
+      await post.update(req.body);
+      res.json({ message: "Post updated successfully.", post });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
 module.exports = router;
