@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/", authenticate, async (req, res) => {
     try {
-        let { page, limit } = req.query;
+        let { page, limit, search } = req.query;
 
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 10
@@ -14,10 +14,21 @@ router.post("/", authenticate, async (req, res) => {
         const offset = (page-1) * limit;
 
         const { count, rows: posts } = await Post.findAndCountAll({
+            where: whereCondition,
             limit,
             offset,
             order: [["createdAt", "DESC"]]
         });
+
+        let whereCondition = {};
+        if (search) {
+            whereCondition = {
+                [Op.or]: [
+                  { title: {[Op.like]: `%${search}%`}},
+                  { content: {[Op.like]: `%${search}%`}},
+                ]
+            };
+        }
 
         res.json({
             totalPosts: count,
