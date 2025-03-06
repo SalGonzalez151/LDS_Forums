@@ -20,9 +20,26 @@ router.post("/:postId/comments", authenticate, async (req, res) => {
 
 router.get("/:postId/comments", async (req, res)=> {
     try {
-        const comments = Comment.findAll({ where: { postId: req.params.postId}});
+        let { page, limit } = req.query;
 
-        res.json(comments);
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 8;
+
+        const offset = (page -1) * limit;
+
+        const { count, rows: comments } = await Comment.findAndCountAll({
+            where: { postId: req.params.postId},
+            limit,
+            offset,
+            order:[["createdAt", "ASC"]]
+        });
+
+        res.json({
+            totalComments: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            comments
+        });
     } catch (error) {
         res.status(505).json({ error: error.message})
     }

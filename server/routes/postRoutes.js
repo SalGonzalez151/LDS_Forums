@@ -6,8 +6,25 @@ const router = express.Router();
 
 router.post("/", authenticate, async (req, res) => {
     try {
-        const post = await Post.create({...req.body, userId: req.user.userId});
-        res.status(201).json(post);
+        let { page, limit } = req.query;
+
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 10
+
+        const offset = (page-1) * limit;
+
+        const { count, rows: posts } = await Post.findAndCountAll({
+            limit,
+            offset,
+            order: [["createdAt", "DESC"]]
+        });
+
+        res.json({
+            totalPosts: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            posts,
+        })
     } catch (error) {
         res.status(500).json({error: error.message});
     }
