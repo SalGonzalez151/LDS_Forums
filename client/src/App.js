@@ -1,21 +1,29 @@
-// src/App.js
 import React from 'react';
-import { Button, Container, Typography } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import Dashboard from './pages/Dashboard'; 
+import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar'; 
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
-    <Container maxWidth="sm" sx={{ textAlign: 'center', marginTop: 4 }}>
-      <Typography variant="h3" gutterBottom>
-        Welcome to LDS Forums
-      </Typography>
-      <Typography variant="body1" paragraph>
-        Join the discussion and explore new topics!
-      </Typography>
-      <Button variant="contained" color="primary">
-        Get Started
-      </Button>
-    </Container>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        
+        {/* Protected Route: Only logged-in users can access */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 
 export default App;
+
