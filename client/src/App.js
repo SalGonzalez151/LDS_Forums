@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard'; 
 import ProtectedRoute from './components/ProtectedRoute';
+import CreatePost from './pages/CreatePost';
 import Navbar from './components/Navbar'; 
 import RegisterPage from './pages/RegisterPage';
 
@@ -19,6 +20,7 @@ function App() {
         {/* Protected Route: Only logged-in users can access */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create-post" element={<CreatePost />} />
         </Route>
       </Routes>
     </Router>
