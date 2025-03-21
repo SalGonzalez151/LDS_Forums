@@ -10,7 +10,7 @@ function Dashboard() {
     // Fetch posts from the server
     const fetchPosts = async () => {
       try {
-        const response = await fetch('/posts', {
+        const response = await fetch('http://localhost:3001/posts', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ function Dashboard() {
         }
         const data = await response.json();
         console.log(data); // Log the response to see the data structure
-        setPosts(data); // Store posts in state
+        setPosts(data.posts); // Store posts in state
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
@@ -47,11 +47,11 @@ function Dashboard() {
 
       {/* Display Posts */}
       <Typography variant="h6" gutterBottom>
-        Your Posts:
+        Recent Posts:
       </Typography>
       <List>
         {posts.map((post) => (
-          <ListItem key={post._id}>
+          <ListItem key={post.id}>
             <ListItemText primary={post.title} secondary={post.content} />
           </ListItem>
         ))}
