@@ -4,7 +4,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
 const router = express.Router();
-const SECRET_KEY = process.env.JWT_SECRET || "supersecret";
+const SECRET_KEY = process.env.JWT_SECRET || "ourlittlesecret";
 
 // 🔹 Register User
 router.post("/register", async (req, res) => {  

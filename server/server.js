@@ -3,16 +3,20 @@ const express = require("express");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const postRoutes = require("./routes/postRoutes");
+const {seedCategories } = require('./categorySeed');
 const commentRoutes = require("./routes/commentRoutes");
 const categoryRoutes = require('./routes/categoryRoutes')
 const authenticate = require('./middleware/authMiddleware')
 const sequelize = require("./config/database");
 const cors = require('cors');
 
+
 const app = express();
 app.use(express.json());
 app.use(cors());
-
+app.use(cors({
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow Authorization header
+}))
 // Routes
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);

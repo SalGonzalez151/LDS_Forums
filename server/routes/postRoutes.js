@@ -4,21 +4,40 @@ const Post = require("../models/Post");
 
 const router = express.Router();
 
-router.post("/", authenticate, async (req, res) => {
+router.post("/",authenticate, async (req, res) => { // Add 'authenticate' middleware
+    try {
+        if (!req.user) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
+        const { title, content, categoryId } = req.body;
+        console.log('Category ID:', categoryId);
+
+        if (!title || !content || !categoryId) {
+            return res.status(400).json({ error: "All fields are required." });
+        }
+
+        const newPost = await Post.create({
+            title,
+            content,
+            categoryId,
+            userId: req.user.id, // This will work if req.user is properly set
+        });
+
+        res.status(201).json(newPost); // Return the newly created post
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get("/", async (req, res) => {
     try {
         let { page, limit, search } = req.query;
 
         page = parseInt(page) || 1;
-        limit = parseInt(limit) || 10
+        limit = parseInt(limit) || 10;
 
-        const offset = (page-1) * limit;
-
-        const { count, rows: posts } = await Post.findAndCountAll({
-            where: whereCondition,
-            limit,
-            offset,
-            order: [["createdAt", "DESC"]]
-        });
+        const offset = (page - 1) * limit;
 
         let whereCondition = {};
         if (search) {
@@ -30,21 +49,19 @@ router.post("/", authenticate, async (req, res) => {
             };
         }
 
+        const { count, rows: posts } = await Post.findAndCountAll({
+            where: whereCondition,
+            limit,
+            offset,
+            order: [["createdAt", "DESC"]]
+        });
+
         res.json({
             totalPosts: count,
             totalPages: Math.ceil(count / limit),
             currentPage: page,
             posts,
-        })
-    } catch (error) {
-        res.status(500).json({error: error.message});
-    }
-});
-
-router.get("/", async (req, res)=> {
-    try {
-        const posts = Post.findAll();
-        res.json(posts);
+        });
     } catch (error) {
         res.status(500).json({error: error.message});
     }

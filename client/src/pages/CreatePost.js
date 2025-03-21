@@ -6,22 +6,21 @@ export default function CreatePost() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('');
-    const [categories, setCategories] = useState('');
+    const [categories, setCategories] = useState([]);
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
+    // Fetch categories from the server
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/categories');
+                const response = await fetch('http://localhost:3001/categories/categories');
+
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data);
-
                     console.log('Fetched categories:', data); // Debug log
                     if (Array.isArray(data)) {
                         setCategories(data);
-                        console.log(data);
                     } else {
                         console.error('Categories is not an array:', data);
                         setCategories([]);
@@ -37,32 +36,54 @@ export default function CreatePost() {
         fetchCategories();
     }, []);
 
-
+    // Handle form submission
     const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevent the page from refreshing
+    
         if (!title.trim() || !content.trim() || !category) {
-            setError("title, content, and category are required");
+            setError("Title, content, and category are required");
             return;
         }
-        const postData = { title, content, category };
-
+    
+        const postData = { title, content, categoryId: category }; // category is the ID of the selected category
+    
+        console.log('Post data:', postData); // Log to check the post data
+        console.log('Selected category:', category);
+        console.log('Category value:', category);
+        
+        // Log token to see if it's available in localStorage
+        const token = localStorage.getItem('token');
+        console.log('Token:', token); // This will show if the token is in localStorage
+    
+        if (!token) {
+            console.error('No token found');
+            setError('You must be logged in to create a post');
+            return;
+        }
+    
         try {
-            const response = await fetch('/posts', {
+            const response = await fetch('http://localhost:3001/posts', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(postData)
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(postData),
             });
-
+    
+            const responseData = await response.json(); // Get response data
+            console.log('Response from server:', responseData); // Log the server response
+    
             if (response.ok) {
-                navigate('/')
+                navigate('/'); // Navigate to the home page if successful
             } else {
-                setError("failed to create Post.");
+                setError("Failed to create Post.");
             }
         } catch (error) {
             console.error('Error', error);
-            setError("An error occured while creating the post.")
+            setError("An error occurred while creating the post.");
         }
     };
-
     return (
         <Container maxWidth="sm">
             <Typography variant="h4" gutterBottom>
@@ -113,5 +134,3 @@ export default function CreatePost() {
         </Container>
     );
 }
-
-;

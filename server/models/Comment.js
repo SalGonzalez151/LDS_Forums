@@ -15,7 +15,7 @@ const Comment = sequelize.define("Comment", {
     },
     userId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: { model: User, key: "id" },
     },
     postId: {
